@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pembelian YouTube</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #667eea, #764ba2);
+      color: #fff;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    h1 { text-align: center; margin-bottom: 20px; }
+    label { display: block; margin-top: 15px; }
+    select, input, button {
+      width: 100%; padding: 10px; margin-top: 5px;
+      border: none; border-radius: 10px;
+    }
+    input, select { background: #fff; color: #000; }
+    button {
+      background: #ff6b6b; color: #fff;
+      font-weight: bold; margin-top: 20px;
+    }
+    button:hover { background: #ff3b3b; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Pembelian YouTube</h1>
+    <label for="kategori">Pilih Kategori:</label>
+    <select id="kategori" onchange="loadProduk()">
+      <option value="Subscribers">Subscribers</option>
+      <option value="Likes">Likes</option>
+      <option value="Views">Views</option>
+    </select>
+
+    <label for="produk">Pilih Paket:</label>
+    <select id="produk" onchange="showForm()"></select>
+
+    <div id="formArea"></div>
+
+    <button onclick="kirim()">Kirim ke WhatsApp</button>
+  </div>
+
+  <script>
+    const data = {
+      Subscribers: [
+        ["100 Subscribers", 3000],
+        ["200 Subscribers", 6000],
+        ["300 Subscribers", 9000],
+        ["400 Subscribers", 12000],
+        ["500 Subscribers", 15000],
+      ],
+      Likes: [
+        ["100 Likes", 1000], ["200 Likes", 2000], ["300 Likes", 3000],
+        ["400 Likes", 4000], ["500 Likes", 5000], ["600 Likes", 6000],
+        ["700 Likes", 7000], ["800 Likes", 8000], ["900 Likes", 9000],
+        ["1000 Likes", 10000]
+      ],
+      Views: [
+        ["100 Views", 1500], ["200 Views", 3000],
+        ["300 Views", 4500], ["400 Views", 6000]
+      ]
+    };
+
+    function loadProduk() {
+      const kat = document.getElementById("kategori").value;
+      const produk = document.getElementById("produk");
+      produk.innerHTML = "";
+      data[kat].forEach((item, i) => {
+        produk.innerHTML += `<option value="${i}">${item[0]} - Rp. ${item[1]}</option>`;
+      });
+      showForm();
+    }
+
+    function showForm() {
+      const kat = document.getElementById("kategori").value;
+      const label = kat === "Subscribers" ? "Username YouTube" : "Link Video";
+      const placeholder = kat === "Subscribers" ? "https://youtube.com/@channel" : "https://youtube.com/watch?v=...";
+      document.getElementById("formArea").innerHTML = `
+        <label>${label}:</label>
+        <input type="text" id="inputData" placeholder="${placeholder}">
+        <label>Catatan (Opsional):</label>
+        <input type="text" id="catatan" placeholder="Contoh: Proses cepat ya kak.">
+      `;
+    }
+
+    function kirim() {
+      const kat = document.getElementById("kategori").value;
+      const idx = document.getElementById("produk").value;
+      const paket = data[kat][idx];
+      const input = document.getElementById("inputData").value.trim();
+      const catatan = document.getElementById("catatan").value.trim();
+      if (!input) return alert("Mohon isi data dengan benar.");
+
+      const pesan = `*PESAN YOUTUBE ${kat.toUpperCase()}*\n- Paket: ${paket[0]}\n- Harga: Rp. ${paket[1]}\n- ${kat === "Subscribers" ? "Username" : "Link"}: ${input}\n- Catatan: ${catatan || "-"}`;
+      window.open(`https://wa.me/6281538769551?text=${encodeURIComponent(pesan)}`, "_blank");
+    }
+
+    loadProduk();
+  </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pembelian TikTok PK Battle Point</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #667eea, #764ba2);
+      color: #fff;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .container {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    label {
+      margin: 10px 0 5px;
+      display: block;
+      font-weight: bold;
+    }
+    select, input, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    select, input {
+      background: #fff;
+      color: #333;
+    }
+    button {
+      background-color: #ff6b6b;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #ff4d4d;
+    }
+    @media(max-width: 480px) {
+      h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Pembelian PK Battle Point TikTok</h1>
+  <div class="container">
+    <label for="produk">Pilih Paket PK Battle Point:</label>
+    <select id="produk">
+      <option value="100 PK Battle Point|500">100 PK Battle Point - Rp. 500</option>
+      <option value="200 PK Battle Point|1000">200 PK Battle Point - Rp. 1.000</option>
+      <option value="300 PK Battle Point|1500">300 PK Battle Point - Rp. 1.500</option>
+      <option value="400 PK Battle Point|2000">400 PK Battle Point - Rp. 2.000</option>
+      <option value="500 PK Battle Point|2500">500 PK Battle Point - Rp. 2.500</option>
+      <option value="600 PK Battle Point|3000">600 PK Battle Point - Rp. 3.000</option>
+      <option value="700 PK Battle Point|3500">700 PK Battle Point - Rp. 3.500</option>
+      <option value="800 PK Battle Point|4000">800 PK Battle Point - Rp. 4.000</option>
+      <option value="900 PK Battle Point|4500">900 PK Battle Point - Rp. 4.500</option>
+      <option value="1000 PK Battle Point|5000">1000 PK Battle Point - Rp. 5.000</option>
+    </select>
+
+    <label for="username">Username TikTok:</label>
+    <input type="text" id="username" placeholder="Masukkan Username TikTok" />
+
+    <label for="catatan">Catatan (opsional):</label>
+    <input type="text" id="catatan" placeholder="Contoh: proses cepat ya kak" />
+
+    <button onclick="kirimWhatsApp()">Kirim ke WhatsApp</button>
+  </div>
+
+  <script>
+    function kirimWhatsApp() {
+      const produk = document.getElementById("produk").value.split("|");
+      const paket = produk[0];
+      const harga = produk[1];
+      const username = document.getElementById("username").value.trim();
+      const catatan = document.getElementById("catatan").value.trim();
+
+      if (!username) {
+        alert("Username TikTok harus diisi.");
+        return;
+      }
+
+      const pesan = `*PESAN TIKTOK PK BATTLE POINT*\n- Paket: ${paket}\n- Harga: Rp. ${harga}\n- Username: ${username}\n- Catatan: ${catatan || "-"}`;
+      const wa = `https://wa.me/6281538769551?text=${encodeURIComponent(pesan)}`;
+      window.open(wa, '_blank');
+    }
+  </script>
+</body>
+</html>
