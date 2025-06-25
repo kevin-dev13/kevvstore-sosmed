@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Layanan Top-Up Entertainment</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    /* Premium Loading Screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .loading-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    /* Animated Logo */
+    .loading-logo {
+      color: white;
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 30px;
+      animation: logoFloat 2s ease-in-out infinite;
+      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .loading-logo i {
+      margin-right: 15px;
+      animation: crownRotate 3s linear infinite;
+    }
+    
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes crownRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Premium Loading Spinner */
+    .loading-spinner {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 30px;
+    }
+    
+    .spinner-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 3px solid transparent;
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+    }
+    
+    .spinner-ring:nth-child(2) {
+      width: 90%;
+      height: 90%;
+      top: 5%;
+      left: 5%;
+      border-top-color: rgba(255, 255, 255, 0.7);
+      animation-duration: 1.5s;
+      animation-direction: reverse;
+    }
+    
+    .spinner-ring:nth-child(3) {
+      width: 80%;
+      height: 80%;
+      top: 10%;
+      left: 10%;
+      border-top-color: rgba(255, 255, 255, 0.5);
+      animation-duration: 2s;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Loading Text */
+    .loading-text {
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      animation: textPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes textPulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    /* Loading Progress Bar */
+    .loading-progress {
+      width: 300px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+      background-size: 200% 100%;
+      border-radius: 2px;
+      animation: progressLoad 3s ease-out forwards, gradientMove 2s linear infinite;
+      width: 0%;
+    }
+    
+    @keyframes progressLoad {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+    
+    /* Skeleton Loading Styles */
+    .skeleton {
+      background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.1) 25%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0.1) 75%);
+      background-size: 200% 100%;
+      animation: skeletonShimmer 1.5s infinite;
+      border-radius: 15px;
+    }
+    
+    @keyframes skeletonShimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .skeleton-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 30px 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .skeleton-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+    }
+    
+    .skeleton-text {
+      height: 20px;
+      width: 70%;
+      margin: 0 auto;
+      border-radius: 10px;
+    }
+    
+    /* Main Content */
+    .main-content {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .main-content.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.2) 0%, transparent 50%);
+      animation: float 15s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-30px) rotate(2deg); }
+      66% { transform: translateY(30px) rotate(-2deg); }
+    }
+    
+    /* Glassmorphism Navbar */
+    .navbar {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 15px 0;
+    }
+    
+    .navbar-brand {
+      color: white !important;
+      font-weight: 800;
+      font-size: 1.8rem;
+      text-shadow: none;
+      background: none;
+      -webkit-background-clip: unset;
+      -webkit-text-fill-color: unset;
+      background-clip: unset;
+      animation: none;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    
+    /* Luxurious Marquee */
+    .marquee {
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+      background-size: 300% 100%;
+      animation: gradientShift 5s ease infinite;
+      padding: 12px 0;
+      font-weight: 600;
+      font-size: 16px;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .marquee::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shine 3s infinite;
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes shine {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    .marquee-content {
+      display: inline-block;
+      animation: scroll-left 20s linear infinite;
+      white-space: nowrap;
+    }
+    
+    @keyframes scroll-left {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    
+    /* Container Styling */
+    .container {
+      padding: 40px 20px;
+    }
+    
+    /* Premium Section Title */
+    .section-title {
+      color: white;
+      font-weight: 800;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 50px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+      border-radius: 2px;
+    }
+    
+    /* Ultra Premium Product Cards */
+    .product-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 30px 20px;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s;
+    }
+    
+    .product-card:hover::before {
+      left: 100%;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-15px) scale(1.05);
+      box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.2),
+        0 0 50px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .product-card:active {
+      transform: translateY(-10px) scale(1.02);
+    }
+    
+    /* Icon Container */
+    .icon-container {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .product-card:hover .icon-container {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+      transform: rotate(360deg);
+    }
+    
+    .icon-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      animation: rotate 3s linear infinite;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .product-card:hover .icon-container::before {
+      opacity: 1;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .product-card i {
+      font-size: 2.5rem;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1;
+      position: relative;
+    }
+    
+    /* Service Name Styling */
+    .service-name {
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      margin-top: 15px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Responsive Grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 25px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .loading-logo {
+        font-size: 2rem;
+      }
+      
+      .loading-progress {
+        width: 250px;
+      }
+      
+      .section-title {
+        font-size: 2rem;
+        margin-bottom: 30px;
+      }
+      
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+      
+      .product-card {
+        padding: 20px 15px;
+      }
+      
+      .icon-container {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .product-card i {
+        font-size: 2rem;
+      }
+    }
+    
+    /* Special Effects */
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      animation: floatUp 15s linear infinite;
+    }
+    
+    @keyframes floatUp {
+      0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0);
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100vh) scale(1);
+      }
+    }
+    
+    /* Premium Button Effects */
+    .btn-premium {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 50px;
+      padding: 12px 30px;
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-premium::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn-premium:hover::before {
+      left: 100%;
+    }
+    
+    .btn-premium:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Premium Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">
+    <i class="fas fa-crown"></i>KEVV STORE
+  </div>
+  
+  <div class="loading-spinner">
+    <div class="spinner-ring"></div>
+    <div class="spinner-ring"></div>
+    <div class="spinner-ring"></div>
+  </div>
+  
+  <div class="loading-text">Memuat layanan premium...</div>
+  
+  <div class="loading-progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+  <!-- Floating Particles -->
+  <div class="floating-particles">
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 6s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 8s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 10s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 12s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 14s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 16s;"></div>
+  </div>
+
+  <!-- Premium Navbar -->
+  <nav class="navbar">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">
+        <i class="fas fa-crown me-2"></i>KEVV STORE
+      </span>
+    </div>
+  </nav>
+
+  <!-- Luxurious Running Text -->
+  <div class="marquee">
+    <div class="marquee-content">
+      🔥 Selamat datang di layanan Top-Up Entertainment Premium! Dapatkan harga terbaik untuk TikTok, YouTube, Instagram, dan lainnya dengan layanan berkualitas tinggi ⭐ Proses cepat & aman 🚀 Support 24/7
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Premium Section Title -->
+    <h2 class="section-title">
+      <i class="fas fa-mobile-alt me-3"></i>Pilih Layanan Sosial Media
+    </h2>
+    
+    <!-- Premium Services Grid -->
+    <div class="services-grid" id="servicesGrid">
+      <!-- Skeleton Loading Cards (initially shown) -->
+      <div class="skeleton-card skeleton-item">
+        <div class="skeleton skeleton-icon"></div>
+        <div class="skeleton skeleton-text"></div>
+      </div>
+      
+      <div class="skeleton-card skeleton-item">
+        <div class="skeleton skeleton-icon"></div>
+        <div class="skeleton skeleton-text"></div>
+      </div>
+      
+      <div class="skeleton-card skeleton-item">
+        <div class="skeleton skeleton-icon"></div>
+        <div class="skeleton skeleton-text"></div>
+      </div>
+      
+      <div class="skeleton-card skeleton-item">
+        <div class="skeleton skeleton-icon"></div>
+        <div class="skeleton skeleton-text"></div>
+      </div>
+      
+      <div class="skeleton-card skeleton-item">
+        <div class="skeleton skeleton-icon"></div>
+        <div class="skeleton skeleton-text"></div>
+      </div>
+      
+      <div class="skeleton-card skeleton-item">
+        <div class="skeleton skeleton-icon"></div>
+        <div class="skeleton skeleton-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="color: #fff; text-align: center; padding: 20px 0;">
+    <p style="margin: 0;">&copy; 2025 Kevv' Store. All rights reserved.</p>
+  </footer>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Loading Screen Controller
+  class LoadingController {
+    constructor() {
+      this.loadingScreen = document.getElementById('loadingScreen');
+      this.mainContent = document.getElementById('mainContent');
+      this.progressBar = document.getElementById('progressBar');
+      this.servicesGrid = document.getElementById('servicesGrid');
+      
+      this.init();
+    }
+    
+    init() {
+      // Start loading sequence
+      this.showLoadingScreen();
+      this.simulateLoading();
+    }
+    
+    showLoadingScreen() {
+      // Ensure loading screen is visible
+      this.loadingScreen.style.display = 'flex';
+      this.mainContent.style.display = 'block';
+    }
+    
+    simulateLoading() {
+      // Simulate different loading phases
+      const phases = [
+        { text: 'Menginisialisasi...', progress: 20, duration: 800 },
+        { text: 'Memuat layanan...', progress: 50, duration: 1000 },
+        { text: 'Menyiapkan interface...', progress: 80, duration: 800 },
+        { text: 'Hampir selesai...', progress: 100, duration: 600 }
+      ];
+      
+      let currentPhase = 0;
+      
+      const processPhase = () => {
+        if (currentPhase < phases.length) {
+          const phase = phases[currentPhase];
+          
+          // Update loading text
+          document.querySelector('.loading-text').textContent = phase.text;
+          
+          // Update progress bar
+          this.progressBar.style.width = phase.progress + '%';
+          
+          setTimeout(() => {
+            currentPhase++;
+            processPhase();
+          }, phase.duration);
+        } else {
+          // Loading complete
+          setTimeout(() => {
+            this.hideLoadingScreen();
+          }, 500);
+        }
+      };
+      
+      processPhase();
+    }
+    
+    hideLoadingScreen() {
+      // Hide loading screen with animation
+      this.loadingScreen.classList.add('fade-out');
+      
+      // Show main content
+      setTimeout(() => {
+        this.loadingScreen.style.display = 'none';
+        this.mainContent.classList.add('loaded');
+        this.loadRealContent();
+      }, 800);
+    }
+    
+    loadRealContent() {
+      // Replace skeleton with real content
+      setTimeout(() => {
+        this.servicesGrid.innerHTML = `
+          <div class="product-card" onclick="window.location.href='page/tiktok.html'">
+            <div class="icon-container">
+              <i class="fab fa-tiktok"></i>
+            </div>
+            <div class="service-name">TikTok</div>
+          </div>
+
+          <div class="product-card" onclick="window.location.href='page/tt-pk.html'">
+            <div class="icon-container">
+              <i class="fas fa-video"></i>
+            </div>
+            <div class="service-name">TikTok PK</div>
+          </div>
+
+          <div class="product-card" onclick="window.location.href='page/yt.html'">
+            <div class="icon-container">
+              <i class="fab fa-youtube"></i>
+            </div>
+            <div class="service-name">YouTube</div>
+          </div>
+
+          <div class="product-card" onclick="window.location.href='page/x.html'">
+            <div class="icon-container">
+              <i class="fab fa-twitter"></i>
+            </div>
+            <div class="service-name">Twitter</div>
+          </div>
+
+          <div class="product-card" onclick="window.location.href='page/ig.html'">
+            <div class="icon-container">
+              <i class="fab fa-instagram"></i>
+            </div>
+            <div class="service-name">Instagram</div>
+          </div>
+
+          <div class="product-card" onclick="window.location.href='page/fb.html'">
+            <div class="icon-container">
+              <i class="fab fa-facebook"></i>
+            </div>
+            <div class="service-name">Facebook</div>
+          </div>
+        `;
+        
+        // Animate cards in
+        this.animateCardsIn();
+      }, 1000);
+    }
+    
+    animateCardsIn() {
+      const cards = document.querySelectorAll('.product-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 150);
+      });
+    }
+  }
+  
+  // Service selection function
+  function selectService(service) {
+    console.log('Selected service:', service);
+    
+    // Add click animation
+    if (event && event.currentTarget) {
+      event.currentTarget.style.transform = 'translateY(-10px) scale(0.98)';
+      setTimeout(() => {
+        event.currentTarget.style.transform = '';
+      }, 150);
+    }
+  }
+  
+  // Add more floating particles dynamically
+  function createParticle() {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 15 + 's';
+    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+    
+    const particlesContainer = document.querySelector('.floating-particles');
+    if (particlesContainer) {
+      particlesContainer.appendChild(particle);
+      
+      // Remove particle after animation
+      setTimeout(() => {
+        if (particle.parentNode) {
+          particle.remove();
+        }
+      }, 25000);
+    }
+  }
+  
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize loading controller
+    new LoadingController();
+    
+    // Create particles periodically (only after loading)
+    setTimeout(() => {
+      setInterval(createParticle, 3000);
+    }, 4000);
+  });
+  
+  // Handle page refresh
+  window.addEventListener('beforeunload', function() {
+    // Show loading screen for page refresh
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+      loadingScreen.classList.remove('fade-out');
+      loadingScreen.style.display = 'flex';
+    }
+  });
+</script>
+</body>
+</html>
